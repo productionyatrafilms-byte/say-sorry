@@ -420,38 +420,32 @@ body[data-lang="gu"] .topic {
 }
 
 .video-frame {
-  width: 43vw;
-  height: 31vw;
+  width: 45vw;
+  height: auto;
   position: relative;
-  background-color: #ffffff;
   padding: 0.25vw;
   border-radius: 2vw;
-  box-shadow: 0 0.4vw 1vw rgba(0, 0, 0, 0.18);
+  display: flex;
+  justify-content: center;
+  align-items: centere;
+}
 
-  -webkit-mask-image: url("../images/mask-img-1.png");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: 100% 100%;
-
-  mask-image: url("../images/mask-img-1.png");
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: 100% 100%;
+.video-frame img{
+  position: absolute;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .video-swiper {
-  width: 98%;
-  height: 100%;
-
-  -webkit-mask-image: url("../images/mask-img-1.png");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: 100% 98%;
-
-  mask-image: url("../images/mask-img-1.png");
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: 100% 98%;
+  width: 90%;
+  object-fit: cover;
 }
 
 .video-swiper .swiper-slide {
@@ -461,9 +455,10 @@ body[data-lang="gu"] .topic {
 
 .topic-video {
   width: 100%;
-  height: 100%;
+  height: 26.5vw;
   object-fit: cover;
   display: block;
+  border-radius: 2.2vw;
 }
 
 /* RIGHT CONTENT SECTION */
