@@ -5,105 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-lang-key="title"></title>
 
-    <link rel="stylesheet" href="./assets/css/swiper-bundle.min.css" />
+    <link
+      rel="stylesheet"
+      href="./assets/css/swiper-bundle.min.css"
+    />
     <link rel="stylesheet" href="./assets/css/style.css" />
-    <link rel="stylesheet" href="./fontawesome/css/all.min.css" />
+
+    <link
+      rel="stylesheet"
+      href="./fontawesome/css/all.min.css"
+    />
 
     <style>
-      /* ---------------- PRANAM LINK ---------------- */
       .pranam-link {
-        position: absolute;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        right: 2vw;
-        bottom: 2vw;
-        width: 9vw;
-        height: auto;
-        text-decoration: none;
-        z-index: 9999;
-        cursor: pointer;
-        transform-origin: center;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition:
-          opacity 0.4s ease,
-          visibility 0.4s ease;
-      }
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 2vw;
+    bottom: 2vw;
+    width: 9vw;
+    height: auto;
+    text-decoration: none;
+    z-index: 9999;
+    cursor: pointer;
+    transform-origin: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
 
-      .pranam-link.show {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        animation: pranamPop 1.2s ease-in-out infinite;
-      }
+  .pranam-link.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    animation: pranamPop 1.2s ease-in-out infinite;
+  }
+    
+.pranam-link img {
+  position: relative;
+  width: 100%;
+  display: block;
+  object-fit: contain;
+}
 
-      .pranam-link img {
-        position: relative;
-        width: 100%;
-        display: block;
-        object-fit: contain;
-      }
+.pranam-link span {
+  position: absolute;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1.3vw;
+  padding-right: 1vw;
+    font-family: "BalooRegular";
 
-      .pranam-link span {
-        position: absolute;
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-        font-size: 1.3vw;
-        padding-right: 1vw;
-        font-family: "BalooRegular";
-      }
+}
 
-      @keyframes pranamPop {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.12);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
+@keyframes pranamPop {
+  0% {
+    transform: scale(1);
+  }
 
-      /* ---------------- BLUR BEHIND POPUP ---------------- */
+  50% {
+    transform: scale(1.12);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+      /* ---------- Video popup styles ---------- */
       body.video-open main,
       body.video-open .page-title,
-      body.video-open .language-container,
       body.video-open .home-button,
+      body.video-open .language-container,
       body.video-open .pranam-link,
       body.video-open .video-btn {
         filter: blur(0.45vw);
         pointer-events: none;
         user-select: none;
-        transition:
-          filter 0.4s ease,
-          transform 0.4s ease;
       }
 
-      /* ---------------- WATCH VIDEO BUTTON ---------------- */
+      main,
+      .page-title,
+      .home-button,
+      .language-container,
+      .video-btn {
+        transition: filter 0.4s ease;
+      }
+
       .video-btn {
         position: fixed;
-        left: 2vw;
-        bottom: 2vw;
+        bottom: 0vw;
+        left: 4vw;
         z-index: 1000;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transform: translateY(1vw);
         transition:
           opacity 0.4s ease,
           visibility 0.4s ease,
-          transform 0.4s ease;
+          filter 0.4s ease;
       }
 
       .video-btn.show {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
-        transform: translateY(0);
       }
 
       .start-video-btn {
@@ -111,6 +120,7 @@
         height: 6vw;
         border-radius: 50vw;
         background: transparent;
+
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -136,6 +146,34 @@
         transform: scale(0.98);
       }
 
+      .close-video-btn i,
+      .video-center-play i,
+      .control-btn i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        flex: 0 0 auto;
+      }
+
+      .close-video-btn i {
+        width: 1.8vw;
+        min-width: 1.8vw;
+        max-width: 1.8vw;
+      }
+
+      .video-center-play i {
+        width: 2.2vw;
+        min-width: 2.2vw;
+        max-width: 2.2vw;
+      }
+
+      .control-btn i {
+        width: 1.4vw;
+        min-width: 1.4vw;
+        max-width: 1.4vw;
+      }
+
       .start-text {
         width: 100%;
         float: right;
@@ -154,7 +192,6 @@
         font-size: 1.5vw;
       }
 
-      /* ---------------- VIDEO POPUP ---------------- */
       .video-popup {
         position: fixed;
         inset: 0;
@@ -243,34 +280,6 @@
         transform: rotate(90deg) scale(1.08);
         background: #8da23a;
         color: #ffffff;
-      }
-
-      .close-video-btn i,
-      .video-center-play i,
-      .control-btn i {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        flex: 0 0 auto;
-      }
-
-      .close-video-btn i {
-        width: 1.8vw;
-        min-width: 1.8vw;
-        max-width: 1.8vw;
-      }
-
-      .video-center-play i {
-        width: 2.2vw;
-        min-width: 2.2vw;
-        max-width: 2.2vw;
-      }
-
-      .control-btn i {
-        width: 1.4vw;
-        min-width: 1.4vw;
-        max-width: 1.4vw;
       }
 
       .custom-controls {
@@ -482,32 +491,29 @@
       <img src="./assets/images/home-btn.png" alt="" />
     </a>
 
-    <div class="page-title">
-      <span data-lang-key="title"></span>
-    </div>
-
-    <a href="pranam.html" class="pranam-link">
-      <img src="./assets/images/arowAsset.png" alt="" />
-      <span data-lang-key="pranam"></span>
-    </a>
-
-    <div class="language-container">
-      <div class="english active">E</div>
-      <div class="hindi">H</div>
-      <div class="gujrati">G</div>
-    </div>
-
-    <!-- WATCH VIDEO BUTTON (visible only on first slide) -->
     <div class="video-btn">
       <button class="start-video-btn" type="button">
         <span class="start-text" data-lang-key="watch"></span>
       </button>
     </div>
 
+    <div class="page-title">
+      <span data-lang-key="title"></span>
+    </div>
+    <a href="pranam.html" class="pranam-link">
+      <img src="./assets/images/arowAsset.png" alt="" />
+      <span data-lang-key="pranam"></span>
+    </a>
+    <div class="language-container">
+      <div class="english active">E</div>
+      <div class="hindi">H</div>
+      <div class="gujrati">G</div>
+    </div>
+
     <main>
       <div class="left-container">
         <div class="video-frame">
-          <img src="./assets/images/icon box.png" alt="" />
+           <img src="./assets/images/icon box.png" alt="">
           <div class="video-swiper swiper">
             <div class="swiper-wrapper">
               <div class="swiper-slide">
@@ -558,15 +564,10 @@
       <div class="right-container">
         <div class="pages">
           <a class="page page-1" href="topic-1.html" data-lang-key="num-1"></a>
-          <a class="page page-2" href="topic-2.html" data-lang-key="num-2"></a>
+           <a class="page page-2" href="topic-2.html" data-lang-key="num-2"></a>
           <a class="page page-1" href="topic-3.html" data-lang-key="num-3"></a>
-          
-            class="page page-1 active"
-            href="topic-4.html"
-            data-lang-key="num-4"
-          ></a>
+          <a class="page page-1 active" href="topic-4.html" data-lang-key="num-4"></a>
         </div>
-
         <div class="content-card">
           <div class="content-top-badge">
             <div class="num" data-lang-key="num-4"></div>
@@ -605,7 +606,6 @@
       </div>
     </main>
 
-    <!-- VIDEO POPUP -->
     <div class="video-popup">
       <div class="video-box">
         <button class="close-video-btn" type="button">
@@ -615,7 +615,7 @@
         <div class="popup-video-frame">
           <video
             class="popup-video"
-            src="./assets/videos/p4_video.mp4"
+            src="./assets/videos/video2.mp4"
             preload="metadata"
             controlsList="nodownload noplaybackrate"
             disablePictureInPicture
@@ -676,15 +676,13 @@
 
     <script src="./assets/js/swiper-bundle.min.js"></script>
     <script src="./assets/js/app.js"></script>
-    <script src="./assets/js/djp.js"></script>
-
+      <script src="./assets/js/djp.js"></script>
     <script>
       // ---- Audio SFX setup ----
       const popAudio = new Audio("./assets/audio/pop.mp3");
       const swipeAudio = new Audio("./assets/audio/swipe.mp3");
       const topicAudio = new Audio("./assets/audio/topic.mp3");
       const transitionAudio = new Audio("./assets/audio/transition.mp3");
-
       popAudio.preload = "auto";
       swipeAudio.preload = "auto";
       topicAudio.preload = "auto";
@@ -750,9 +748,7 @@
         });
       });
 
-      /* ============================================================
-         VIDEO POPUP
-      ============================================================ */
+      // ---- Video popup ----
       const videoBtnWrap = document.querySelector(".video-btn");
       const startVideoBtn = document.querySelector(".start-video-btn");
       const videoPopup = document.querySelector(".video-popup");
@@ -781,9 +777,6 @@
       let lastVolume = 1;
       let savedVideoTime = 0;
       let isProgressDragging = false;
-
-      // Filled in by initSwipers() so the popup can pause/resume topic videos
-      let resumeTopicVideo = function () {};
 
       function formatTime(time) {
         if (!time || isNaN(time)) return "0:00";
@@ -822,7 +815,7 @@
         totalTimeText.textContent = formatTime(popupVideo.duration);
       }
 
-      // Free scrubbing: drag forward or backward anywhere on the bar
+      // Free scrubbing: user can drag forward or backward anywhere on the bar
       function handleProgressInput() {
         if (!popupVideo.duration) return;
 
@@ -870,11 +863,6 @@
       function openVideoPopup() {
         if (!videoPopup || !popupVideo) return;
 
-        // pause the background topic video while the popup is open
-        document.querySelectorAll(".topic-video").forEach(function (video) {
-          video.pause();
-        });
-
         document.body.classList.add("video-open");
         videoPopup.classList.add("active");
 
@@ -896,7 +884,6 @@
 
       function closeVideoPopup() {
         if (!videoPopup || !popupVideo) return;
-        if (!videoPopup.classList.contains("active")) return;
 
         savedVideoTime = popupVideo.currentTime;
 
@@ -910,9 +897,6 @@
         }
 
         updatePlayIcons();
-
-        // resume the topic video behind the popup
-        resumeTopicVideo();
       }
 
       function toggleMute() {
@@ -1057,7 +1041,6 @@
         if (!e.key) return;
 
         if (e.key === "Escape") {
-          if (document.fullscreenElement) return;
           closeVideoPopup();
         }
 
@@ -1075,9 +1058,21 @@
         }
       });
 
-      /* ============================================================
-         SWIPERS
-      ============================================================ */
+      // Show the watch button only on the first slide
+      function updateVideoBtnVisibility(activeIndex) {
+        if (!videoBtnWrap) return;
+
+        if (activeIndex === 0) {
+          videoBtnWrap.classList.add("show");
+        } else {
+          videoBtnWrap.classList.remove("show");
+
+          if (videoPopup.classList.contains("active")) {
+            closeVideoPopup();
+          }
+        }
+      }
+
       function initSwipers() {
         const prevBtn = document.querySelector(".swiper-ctrl-prev");
         const nextBtn = document.querySelector(".swiper-ctrl-next");
@@ -1113,13 +1108,11 @@
             init: function () {
               playActiveVideo(this.activeIndex);
               updateNavButtons(this);
-              updateVideoBtn(this);
             },
             slideChange: function () {
               videoSwiper.slideTo(this.activeIndex);
               playActiveVideo(this.activeIndex);
               updateNavButtons(this);
-              updateVideoBtn(this);
             },
           },
         });
@@ -1137,28 +1130,6 @@
           });
         }
 
-        // Lets closeVideoPopup() restart the current topic video
-        resumeTopicVideo = function () {
-          const videos = document.querySelectorAll(".topic-video");
-          const activeVideo = videos[contentSwiper.activeIndex];
-
-          if (activeVideo) {
-            activeVideo.play().catch(() => {});
-          }
-        };
-
-        // Watch button shows only on the FIRST slide
-        function updateVideoBtn(swiper) {
-          if (!videoBtnWrap) return;
-
-          if (swiper.activeIndex === 0) {
-            videoBtnWrap.classList.add("show");
-          } else {
-            videoBtnWrap.classList.remove("show");
-            closeVideoPopup();
-          }
-        }
-
         function updateNavButtons(swiper) {
           if (swiper.isBeginning) {
             prevBtn.style.display = "none";
@@ -1173,6 +1144,8 @@
             nextBtn.style.display = "flex";
             pranamLink?.classList.remove("show");
           }
+
+          updateVideoBtnVisibility(swiper.activeIndex);
         }
 
         nextBtn.addEventListener("click", function () {
