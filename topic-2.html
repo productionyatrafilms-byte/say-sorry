@@ -5,11 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-lang-key="title"></title>
 
-    <link
-      rel="stylesheet"
-      href="./assets/css/swiper-bundle.min.css"
-    />
+    <link rel="stylesheet" href="./assets/css/swiper-bundle.min.css" />
     <link rel="stylesheet" href="./assets/css/style.css" />
+
+    <!-- Warm up the very first video as early as possible -->
+    <link rel="preload" as="video" href="./assets/videos/p2_v1.mp4" type="video/mp4" />
+
+    <style>
+      /* Lightweight loading indicator while a video buffers */
+      .video-frame {
+        position: relative;
+      }
+
+      .video-frame.is-video-loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 42px;
+        height: 42px;
+        margin: -21px 0 0 -21px;
+        border: 3px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: videoSpin 0.8s linear infinite;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      @keyframes videoSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .video-frame.is-video-loading::after {
+          animation-duration: 2s;
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -30,31 +65,39 @@
     <main>
       <div class="left-container">
         <div class="video-frame">
-           <img src="./assets/images/icon box.png" alt="">
+          <img src="./assets/images/icon box.png" alt="" />
           <div class="video-swiper swiper">
             <div class="swiper-wrapper">
+              <!-- Only the first video carries a real src so the browser can
+                   start fetching it during HTML parse. The rest are lazy-loaded
+                   from data-src by the script below. -->
               <div class="swiper-slide">
                 <video
                   class="topic-video"
                   src="./assets/videos/p2_v1.mp4"
+                  data-src="./assets/videos/p2_v1.mp4"
+                  data-loaded="1"
                   muted
                   playsinline
+                  preload="auto"
                 ></video>
               </div>
               <div class="swiper-slide">
                 <video
                   class="topic-video"
-                  src="./assets/videos/p2_v2.mp4"
+                  data-src="./assets/videos/p2_v2.mp4"
                   muted
                   playsinline
+                  preload="none"
                 ></video>
               </div>
               <div class="swiper-slide">
                 <video
                   class="topic-video"
-                  src="./assets/videos/p2_v3.mp4"
+                  data-src="./assets/videos/p2_v3.mp4"
                   muted
                   playsinline
+                  preload="none"
                 ></video>
               </div>
             </div>
@@ -65,7 +108,7 @@
       <div class="right-container">
         <div class="pages">
           <a class="page page-1" href="topic-1.html" data-lang-key="num-1"></a>
-           <a class="page page-2 active" href="topic-2.html" data-lang-key="num-2"></a>
+          <a class="page page-2 active" href="topic-2.html" data-lang-key="num-2"></a>
           <a class="page page-1" href="topic-3.html" data-lang-key="num-3"></a>
           <a class="page page-1" href="topic-4.html" data-lang-key="num-4"></a>
         </div>
@@ -103,7 +146,7 @@
 
     <script src="./assets/js/swiper-bundle.min.js"></script>
     <script src="./assets/js/app.js"></script>
-      <script src="./assets/js/djp.js"></script>
+    <script src="./assets/js/djp.js"></script>
     <script>
       // ---- Audio SFX setup ----
       const popAudio = new Audio("./assets/audio/pop.mp3");
@@ -169,6 +212,17 @@
       function initSwipers() {
         const prevBtn = document.querySelector(".swiper-ctrl-prev");
         const nextBtn = document.querySelector(".swiper-ctrl-next");
+        const videoFrame = document.querySelector(".video-frame");
+        const videos = Array.prototype.slice.call(
+          document.querySelectorAll(".topic-video")
+        );
+
+        // How many videos ahead of the current one to warm up in the background
+        const PRELOAD_AHEAD = 2;
+
+        // Index of the slide the user is currently on. Used to cancel stale
+        // "start playing" callbacks when someone swipes quickly.
+        let currentIndex = 0;
 
         // Swipe sound on nav button click
         if (prevBtn) {
@@ -177,6 +231,138 @@
 
         if (nextBtn) {
           nextBtn.addEventListener("click", playSwipeSound);
+        }
+
+        // Run a low-priority task without competing with the active download
+        function runWhenIdle(fn) {
+          if (typeof window.requestIdleCallback === "function") {
+            window.requestIdleCallback(fn, { timeout: 2000 });
+          } else {
+            setTimeout(fn, 300);
+          }
+        }
+
+        function setLoadingState(isLoading) {
+          if (!videoFrame) return;
+          videoFrame.classList.toggle("is-video-loading", !!isLoading);
+        }
+
+        // Attach the real src the first time a video is actually needed.
+        // priority = true  -> full download (the video about to play)
+        // priority = false -> background warm-up for an upcoming video
+        function ensureVideoLoaded(index, priority) {
+          const video = videos[index];
+          if (!video) return null;
+
+          if (video.dataset.loaded !== "1") {
+            video.preload = priority ? "auto" : "metadata";
+            video.src = video.dataset.src;
+            video.dataset.loaded = "1";
+            video.load();
+          } else if (priority && video.preload !== "auto") {
+            video.preload = "auto";
+          }
+
+          return video;
+        }
+
+        // Warm up neighbouring videos only after the current one has buffered,
+        // so background downloads never slow down what the user is watching.
+        function warmUpNeighbours(activeIndex) {
+          const warm = function () {
+            for (let step = 1; step <= PRELOAD_AHEAD; step++) {
+              ensureVideoLoaded(activeIndex + step, false);
+            }
+            ensureVideoLoaded(activeIndex - 1, false);
+          };
+
+          const video = videos[activeIndex];
+
+          if (!video || video.readyState >= 3) {
+            runWhenIdle(warm);
+            return;
+          }
+
+          video.addEventListener(
+            "canplaythrough",
+            function () {
+              runWhenIdle(warm);
+            },
+            { once: true }
+          );
+
+          // Safety net: never leave neighbours unloaded if the event never fires
+          setTimeout(function () {
+            runWhenIdle(warm);
+          }, 4000);
+        }
+
+        function safeReset(video) {
+          try {
+            if (video.readyState >= 1 && video.currentTime !== 0) {
+              video.currentTime = 0;
+            }
+          } catch (e) {
+            // metadata not ready yet - safe to skip
+          }
+        }
+
+        function playActiveVideo(activeIndex) {
+          currentIndex = activeIndex;
+
+          // Pause and rewind everything that is not on screen
+          videos.forEach(function (video, index) {
+            if (index !== activeIndex) {
+              video.pause();
+              safeReset(video);
+            }
+          });
+
+          const video = ensureVideoLoaded(activeIndex, true);
+          if (!video) return;
+
+          const startPlayback = function () {
+            // The user moved on while this video was buffering
+            if (currentIndex !== activeIndex) return;
+
+            setLoadingState(false);
+            safeReset(video);
+
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(function () {});
+            }
+          };
+
+          if (video.readyState >= 2) {
+            startPlayback();
+          } else {
+            setLoadingState(true);
+            video.addEventListener("loadeddata", startPlayback, { once: true });
+            video.addEventListener(
+              "error",
+              function () {
+                if (currentIndex === activeIndex) setLoadingState(false);
+              },
+              { once: true }
+            );
+          }
+
+          warmUpNeighbours(activeIndex);
+        }
+
+        function updateNavButtons(swiper) {
+          if (swiper.isBeginning) {
+            prevBtn.style.display = "none";
+          } else {
+            prevBtn.style.display = "flex";
+          }
+
+          if (swiper.isEnd) {
+            nextBtn.style.display = "none";
+          } else {
+            nextBtn.style.display = "flex";
+          }
         }
 
         const videoSwiper = new Swiper(".video-swiper", {
@@ -214,32 +400,20 @@
           },
         });
 
-        function playActiveVideo(activeIndex) {
-          const videos = document.querySelectorAll(".topic-video");
+        // If the tab is hidden, stop buffering/playing to save bandwidth
+        document.addEventListener("visibilitychange", function () {
+          const video = videos[currentIndex];
+          if (!video) return;
 
-          videos.forEach((video, index) => {
+          if (document.hidden) {
             video.pause();
-            video.currentTime = 0;
-
-            if (index === activeIndex) {
-              video.play().catch(() => {});
+          } else {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(function () {});
             }
-          });
-        }
-
-        function updateNavButtons(swiper) {
-          if (swiper.isBeginning) {
-            prevBtn.style.display = "none";
-          } else {
-            prevBtn.style.display = "flex";
           }
-
-          if (swiper.isEnd) {
-            nextBtn.style.display = "none";
-          } else {
-            nextBtn.style.display = "flex";
-          }
-        }
+        });
       }
 
       initSwipers();
