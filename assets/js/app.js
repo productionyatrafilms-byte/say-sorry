@@ -15,7 +15,7 @@ const langSounds = {
 };
 
 Object.values(langSounds).forEach((audio) => {
-  audio.preload = "auto";
+  audio.preload = "none";
 });
 
 function playLangSound(lang) {
