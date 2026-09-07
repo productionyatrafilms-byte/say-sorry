@@ -81,15 +81,10 @@ function applyLanguage(lang) {
 window.addEventListener("DOMContentLoaded", () => {
   document.body.classList.add("page-loaded");
 
-  fetch("./assets/json/data.json", { cache: "no-store" })
-    .then((res) => res.json())
-    .then((data) => {
-      translations = data;
+  translations = typeof data !== "undefined" ? data : {};
 
-      const currentLang = localStorage.getItem(LANG_KEY) || DEFAULT_LANG;
-      applyLanguage(currentLang);
-    })
-    .catch((err) => console.error("Error loading translations:", err));
+  const currentLang = localStorage.getItem(LANG_KEY) || DEFAULT_LANG;
+  applyLanguage(currentLang);
 });
 
 // optional fade out function for page navigation
